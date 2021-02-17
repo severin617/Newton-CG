@@ -1,0 +1,1 @@
+mpirun -np 1 python3 horovod_keras_imagenet_resnet50.py  --train-dir="/work/ga36wom/image-net-raw/train" --val-dir="/work/ga36wom/image-net-raw/validation" --checkpoint-format="./checkpoints/checkpoint-{epoch}.h5" --resume_epoch=0

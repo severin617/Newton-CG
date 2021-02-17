@@ -1,0 +1,99 @@
+#########
+#RMSProp#
+#########
+CUDA_VISIBLE_DEVICES=0 python train_image_classifier.py \
+--train_dir=${TRAIN_DIR} \
+--dataset_name=imagenet \
+--dataset_split_name=train \
+--dataset_dir=${DATASET_DIR} \
+--model_name=inception_v3 \
+--checkpoint_path=${CHECKPOINT_FILE} \
+--clone_on_cpu=False \
+--checkpoint_exclude_scopes=InceptionV3/Logits,InceptionV3/AuxLogits \
+--max_number_of_steps=300 \
+--save_checkpoints_steps=100 \
+--save_summaries_steps=100 \
+--batch_size=64 \
+--learning_rate=0.001 \
+--end_learning_rate=0.00001 \
+--learning_rate_decay_type='exponential' \
+--learning_rate_decay_factor=0.94 \
+--num_epochs_per_decay=0.05 \
+--optimizer='rmsprop'
+
+#########################
+#Newton Hessian Trick CG#
+#########################
+
+CUDA_VISIBLE_DEVICES=0 python train_image_classifier.py \
+--train_dir=${TRAIN_DIR} \
+--dataset_name=imagenet \
+--dataset_split_name=train \
+--dataset_dir=${DATASET_DIR} \
+--model_name=inception_v3 \
+--checkpoint_path=${CHECKPOINT_FILE} \
+--clone_on_cpu=False \
+--checkpoint_exclude_scopes=InceptionV3/Logits,InceptionV3/AuxLogits \
+--max_number_of_steps=300 \
+--save_checkpoints_steps=100 \
+--save_summaries_steps=100 \
+--batch_size=64 \
+--learning_rate=0.001 \
+--end_learning_rate=0.00001 \
+--learning_rate_decay_type='exponential' \
+--learning_rate_decay_factor=0.94 \
+--num_epochs_per_decay=0.05 \
+--optimizer='second' \
+--eso_epsilon=0.01 \
+--eso_cg_tol=0.00001 \
+--eso_max_iter=20
+
+#######################
+# Just the last layer #
+#######################
+CUDA_VISIBLE_DEVICES=0 screen -d -m -L \
+python ../train_image_classifier.py \
+--train_dir=${TRAIN_DIR} \
+--dataset_name=imagenet \
+--dataset_split_name=train \
+--dataset_dir=${DATASET_DIR} \
+--clone_on_cpu=False \
+--model_name=inception_v3 \
+--checkpoint_path=${CHECKPOINT_FILE} \
+--checkpoint_exclude_scopes=InceptionV3/Logits,InceptionV3/AuxLogits \
+--trainable_scopes=InceptionV3/Logits,InceptionV3/AuxLogits \
+--max_number_of_steps=100 \
+--save_checkpoints_steps=300 \
+--save_summaries_steps=100 \
+--profiling_enabled=False \
+--profile_every_n_steps=100 \
+--profile_dir='profiles/InceptionV3' \
+--batch_size=64 \
+--learning_rate=0.001 \
+--end_learning_rate=0.000001 \
+--learning_rate_decay_type='exponential' \
+--learning_rate_decay_factor=0.94 \
+--num_epochs_per_decay=0.05 \
+--optimizer='second' \
+--eso_epsilon=0.01 \
+--eso_cg_tol=0.00001 \
+--eso_max_iter=20
+
+# my default start learning rate: 0.001
+# my default eso_epsilon: 0.01
+# after 1k steps
+# 1/10th of the default learning rates.
+# learning rate decays every ca. 1.18k steps
+# batch size 2*default
+# default learning rate decay type
+# default decay rate 0.94, now rate 0.74
+# Store checkpoints and summaries every 100 steps.
+
+###############################################
+# Pretrained model checkpoint names.
+# InceptionV3
+PRETRAINED_TGZ='inception_v3_2016_08_28.tar.gz'
+PRETRAINED_LINK="http://download.tensorflow.org/models/$PRETRAINED_TGZ"
+#MobileNetV2
+PRETRAINED_TGZ='mobilenet_v2_1.4_224.tgz'
+PRETRAINED_LINK="https://storage.googleapis.com/$MODEL_NAME/checkpoints/$PRETRAINED_TGZ"
