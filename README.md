@@ -1,7 +1,7 @@
 # Newton-CG
 
 
-## How to install/use the solver
+## How to install/use the cg-approximated second order optimizer for tensorflow
 
 
 ```pip install -i https://test.pypi.org/simple/ newton-cg==0.0.1 ```
