@@ -1,9 +1,0 @@
-README.md
-setup.py
-newton_cg/__init__.py
-newton_cg/efficient_second_3.py
-newton_cg.egg-info/PKG-INFO
-newton_cg.egg-info/SOURCES.txt
-newton_cg.egg-info/dependency_links.txt
-newton_cg.egg-info/requires.txt
-newton_cg.egg-info/top_level.txt
