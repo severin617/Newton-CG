@@ -10,7 +10,7 @@ and use in code like
 
 
 ```
-import newton-cg as es
+import newton_cg as es
 
     optimizer = es.EHNewtonOptimizer(
         learning_rate,
