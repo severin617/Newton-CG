@@ -136,8 +136,20 @@ class EHNewtonOptimizer(optimizer_v2.OptimizerV2):
     return scaled_step
   
   def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
-    raise NotImplementedError("_resource_apply_sparse t.b.d.")
-  
+    # raise NotImplementedError("_resource_apply_sparse t.b.d.")
+    return state_ops.assign_add(var, step, use_locking=self._use_locking).op
+  def _resource_compute_sparse(self, grad, var, apply_state=None):
+    print("eso._resource_compute_sparse() called.")
+    var_device, var_dtype = var.device, var.dtype.base_dtype
+    coefficients = ((apply_state or {}).get((var_device, var_dtype))
+                    or self._fallback_apply_state(var_device, var_dtype))
+    
+    step = self._newton_step(grad, var, coefficients)
+    scaled_step = math_ops.multiply(step, coefficients['lr_t'])
+    print("eso._resource_compute_dense() FINISHED.")
+    return scaled_step
+
+
   def get_config(self):
     config = super(EHNewtonOptimizer, self).get_config()
     config.update({
