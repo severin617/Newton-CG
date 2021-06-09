@@ -202,8 +202,9 @@ class EHNewtonOptimizer(optimizer_v2.OptimizerV2):
     Returns:
       A `Tensor` with the value `H * s`, same type as `grad`.
     """
-    dg_dv = self._compute_gradient(grad, var)  # first backprop
-    elemwise = math_ops.multiply(dg_dv, array_ops.stop_gradient(s))
+    # comment becuase we think it's a bug (third derirvative
+    # dg_dv = self._compute_gradient(grad, var)  # first backprop
+    elemwise = math_ops.multiply(grad, array_ops.stop_gradient(s))
     return self._compute_gradient(elemwise, var)  # second backprop
   
   def _cg_solve(self, Ax, b, cg_tol_t, max_iter_t):
