@@ -137,7 +137,7 @@ class EHNewtonOptimizer(optimizer_v2.OptimizerV2):
   
   def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
     # raise NotImplementedError("_resource_apply_sparse t.b.d.")
-    return state_ops.assign_add(var, step, use_locking=self._use_locking).op
+    return state_ops.assign_add(var, grad, use_locking=self._use_locking).op
   def _resource_compute_sparse(self, grad, var, apply_state=None):
     print("eso._resource_compute_sparse() called.")
     var_device, var_dtype = var.device, var.dtype.base_dtype
