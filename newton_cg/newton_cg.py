@@ -41,6 +41,63 @@ from tensorflow.python.eager import context
 # Keras export
 from tensorflow.python.util.tf_export import keras_export
 
+start_lr = 0.01
+start_k = 0.1
+
+
+# don't use "current_lr" parameter - strange behaviour with rounding to 0 after lr is set to value <1
+# instead - calculate "current_lr" based on "epoch" parameter
+
+def custom_decay(epoch):
+    initial_lr = start_lr
+    k = start_k
+    threshold = 10
+    if epoch < threshold:
+        return initial_lr
+    else:
+        lr = initial_lr * np.exp(-k * (epoch - threshold))
+        return lr
+
+
+def exp_decay(epoch):
+    initial_lr = start_lr
+    k = start_k
+    lr = initial_lr * np.exp(-k * epoch)
+    return lr
+
+
+def time_decay(epoch):
+    initial_lr = start_lr
+    k = start_k
+    lr = initial_lr
+    for i in range(0, epoch + 1):
+        lr *= 1. / (1. + k * i)
+    return lr
+
+
+def step_decay(epoch):
+    initial_lr = start_lr
+    drop = 0.5
+    epochs_drop = 10.0
+    lr = initial_lr * math.pow(drop,
+                               math.floor((1 + epoch) / epochs_drop))
+    return lr
+
+
+def const_decay(epoch):
+    return start_lr
+
+
+exp_lr = tf.keras.callbacks.LearningRateScheduler(exp_decay, verbose=1)
+time_lr = tf.keras.callbacks.LearningRateScheduler(time_decay, verbose=1)
+step_lr = tf.keras.callbacks.LearningRateScheduler(step_decay, verbose=1)
+const_lr = tf.keras.callbacks.LearningRateScheduler(const_decay, verbose=1)
+custom_lr = tf.keras.callbacks.LearningRateScheduler(custom_decay, verbose=1)
+
+
+
+
+
 
 @keras_export('keras.optimizers.EfficientHessianOptimizer')
 class EHNewtonOptimizer(optimizer_v2.OptimizerV2):
